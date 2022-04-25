@@ -5,19 +5,31 @@ const customers = [
   { id: "2", name: "Scodeler", birthYear: '1988-01-19' }
 ]
 
+const AWS = require('aws-sdk');
+const params = { TableName: 'CUSTOMERS' }
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
 module.exports.listCustomers = async (event) => {
   console.log(event);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        customers,
-      },
-      null,
-      2
-    ),
-  };
+  try {
+    let data = await dynamoDB.scan(params).promise();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    }
+  } catch (error) {
+    console.log('Error', error);
+
+    return {
+      statusCode: error.statusCode ? error.statusCode : 500,
+      body: JSON.stringify({
+        error: error.name ? error.name : 'Exception',
+        message: error.message ? error.message : 'Generic error'
+      })
+    }
+  }
 };
 
 module.exports.getCustomerById = async (event) => {

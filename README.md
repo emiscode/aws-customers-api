@@ -7,10 +7,18 @@ Customers REST API Project with AWS Lambda and Serverless Framework
     - 200: returns the customers list
   - GET /customers/{id}
     - 200: returns the customer
-    - 404: returns a error message
+    - 404: returns an error message
   - POST /customers
   - PUT /customers/{id}
   - DELETE /customers/{id}
 - Serverless Framework
 - Front-End > AWS API Gateway > AWS Lambda
+- DynamoDB
+- Some commands:
+  - sls deploy
+  - sls offline
+  - sls deploy -f getCustomerById
+  - sls logs -f getCustomerById --tail
+  - sls invoke local -f getCustomerById
+  - aws dynamodb batch-write-item --request-items file://customers.json
 

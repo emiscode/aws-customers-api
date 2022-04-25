@@ -1,0 +1,46 @@
+{
+  "CUSTOMERS": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "1"
+          },
+          "name": {
+            "S": "Emilio"
+          },
+          "email": {
+            "S": "emiscode@gmail.com"
+          },
+          "birthYear": {
+            "S": "1985-12-05"
+          },
+          "active": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "2"
+          },
+          "name": {
+            "S": "Scodeler"
+          },
+          "email": {
+            "S": "scodeler.emilio@gmail.com"
+          },
+          "birthYear": {
+            "S": "1988-01-19"
+          },
+          "active": {
+            "BOOL": true
+          }
+        }
+      }
+    }
+  ]
+}
