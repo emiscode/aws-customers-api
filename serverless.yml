@@ -12,3 +12,9 @@ functions:
       - http:
           path: customers
           method: get
+  getCustomerById:
+    handler: handler.getCustomerById
+    events:
+      - http:
+          path: customers/{id}
+          method: get
