@@ -4,7 +4,10 @@ Customers REST API Project with AWS Lambda and Serverless Framework
 - AWS Lambda
 - AWS API Gateway
   - GET /customers
+    - 200: returns the customers list
   - GET /customers/{id}
+    - 200: returns the customer
+    - 404: returns a error message
   - POST /customers
   - PUT /customers/{id}
   - DELETE /customers/{id}

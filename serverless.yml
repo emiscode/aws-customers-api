@@ -5,6 +5,8 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+plugins:
+  - serverless-offline
 functions:
   listCustomers:
     handler: handler.listCustomers

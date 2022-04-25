@@ -26,8 +26,15 @@ module.exports.getCustomerById = async (event) => {
   const { id } = event["pathParameters"];
   const customerResponse = customers.find(customer => customer.id === id);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(customerResponse, null, 2),
-  };
+  if (customerResponse) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(customerResponse, null, 2),
+    };
+  } else {
+    return {
+      statusCode: 404,
+      body: JSON.stringify({ error: `customer with id ${id} not found` }, null, 2),
+    };
+  }
 };
