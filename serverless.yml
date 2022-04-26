@@ -7,7 +7,7 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    CUSTOMERS_TABLE: 'CUSTOMERS-${opt:stage, self:provider:stage}'
+    CUSTOMERS_TABLE: 'CUSTOMERS-${opt:stage, self:provider.stage}'
 
   iamRoleStatements:
     - Effect: Allow

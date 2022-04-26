@@ -4,20 +4,23 @@
   "description": "Customers REST API Project with AWS Lambda and Serverless Framework",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fixtures": "offline/fixtures/customers-fixtures.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/emiscode/aws-customers-api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Emilio Scodeler",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/emiscode/aws-customers-api/issues"
   },
   "homepage": "https://github.com/emiscode/aws-customers-api#readme",
   "devDependencies": {
+    "@faker-js/faker": "^6.2.0",
+    "faker": "^6.6.6",
     "serverless-dynamodb-local": "^0.2.40",
     "serverless-offline": "^8.7.0"
   },
