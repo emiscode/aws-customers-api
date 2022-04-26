@@ -13,6 +13,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:DeleteItem
         - dynamodb:GetItem
+        - dynamodb:UpdateItem
       Resource: arn:aws:dynamodb:us-east-1:425187044368:table/CUSTOMERS
 plugins:
   - serverless-offline
@@ -35,6 +36,12 @@ functions:
       - http:
           path: customers
           method: post
+  updateCustomer:
+    handler: handler.updateCustomer
+    events:
+      - http:
+          path: customers/{id}
+          method: put
 resources:
   Resources:
     CustomersTable:

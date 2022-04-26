@@ -89,11 +89,11 @@ module.exports.saveCustomer = async (event) => {
     }
 
     await dynamoDB
-      .put({
+    .put({
       ...params,
       Item: customer,
     })
-      .promise();
+    .promise();
 
     return {
       statusCode: 201,
@@ -107,6 +107,64 @@ module.exports.saveCustomer = async (event) => {
       body: JSON.stringify({
         error: error.name ? error.name : 'Exception',
         message: error.message ? error.message : 'Generic error'
+      })
+    }
+  }
+};
+
+module.exports.updateCustomer = async (event) => {
+  console.log(event);
+
+  const { id } = event["pathParameters"];
+
+  try {
+    let data = JSON.parse(event.body);
+
+    const timestamp = Date.now();
+    const { name, birthYear, email } = data;
+
+    await dynamoDB
+    .update({
+      ...params,
+      Key: {
+        id
+      },
+      UpdateExpression:
+        'SET #name = :name, birthYear = :by, email = :email, updatedAt = :updatedAt',
+      ConditionExpression: 'attribute_exists(id)',
+      ExpressionAttributeNames: {
+        '#name': 'name'
+      },
+      ExpressionAttributeValues: {
+        ':name': name,
+        ':by': birthYear,
+        ':email': email,
+        ':updatedAt': timestamp
+      }
+    })
+    .promise();
+
+    return {
+      statusCode: 204,
+    };
+
+  } catch (error) {
+    console.log('Error', error);
+
+    let errorName = error.name ? error.name : 'Exception';
+    let errorMessage = error.message ? error.message : 'Generic error';
+    let errorStatusCode = error.statusCode ? error.statusCode : 500
+
+    if (errorName === 'ConditionalCheckFailedException') {
+      errorName = `Customer with id ${id} not found`;
+      errorMessage = `Nothing to be updated`;
+    }
+
+    return {
+      statusCode: errorStatusCode,
+      body: JSON.stringify({
+        error: errorName,
+        message: errorMessage
       })
     }
   }
