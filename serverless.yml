@@ -12,6 +12,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:DeleteItem
+        - dynamodb:GetItem
       Resource: arn:aws:dynamodb:us-east-1:425187044368:table/CUSTOMERS
 plugins:
   - serverless-offline
@@ -28,6 +29,12 @@ functions:
       - http:
           path: customers/{id}
           method: get
+  saveCustomer:
+    handler: handler.saveCustomer
+    events:
+      - http:
+          path: customers
+          method: post
 resources:
   Resources:
     CustomersTable:

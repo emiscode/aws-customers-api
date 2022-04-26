@@ -1,11 +1,7 @@
 'use strict';
 
-const customers = [
-  { id: "1", name: "Emilio", birthYear: '1985-12-05' },
-  { id: "2", name: "Scodeler", birthYear: '1988-01-19' }
-]
-
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
 const params = { TableName: 'CUSTOMERS' }
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
@@ -17,7 +13,7 @@ module.exports.listCustomers = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      body: JSON.stringify(data.Items),
     }
   } catch (error) {
     console.log('Error', error);
@@ -35,18 +31,83 @@ module.exports.listCustomers = async (event) => {
 module.exports.getCustomerById = async (event) => {
   console.log(event);
 
-  const { id } = event["pathParameters"];
-  const customerResponse = customers.find(customer => customer.id === id);
+  try {
+    const { id } = event["pathParameters"];
 
-  if (customerResponse) {
+    const data = await dynamoDB
+    .get({
+      ...params,
+      Key: {
+        id: id
+      }
+    })
+    .promise();
+
+    if (!data.Item) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: `customer with id ${id} not found` }, null, 2),
+      };
+    }
+
+    const customerResponse = data.Item;
+
     return {
       statusCode: 200,
       body: JSON.stringify(customerResponse, null, 2),
     };
-  } else {
+
+  } catch (error) {
+    console.log('Error', error);
+
     return {
-      statusCode: 404,
-      body: JSON.stringify({ error: `customer with id ${id} not found` }, null, 2),
+      statusCode: error.statusCode ? error.statusCode : 500,
+      body: JSON.stringify({
+        error: error.name ? error.name : 'Exception',
+        message: error.message ? error.message : 'Generic error'
+      })
+    }
+  }
+};
+
+module.exports.saveCustomer = async (event) => {
+  console.log(event);
+
+  try {
+    let data = JSON.parse(event.body);
+    const timestamp = Date.now();
+    const { name, birthYear, email } = data;
+
+    const customer = {
+      id: uuidv4(undefined, undefined, undefined),
+      name,
+      birthYear,
+      email,
+      active: true,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    }
+
+    await dynamoDB
+      .put({
+      ...params,
+      Item: customer,
+    })
+      .promise();
+
+    return {
+      statusCode: 201,
     };
+
+  } catch (error) {
+    console.log('Error', error);
+
+    return {
+      statusCode: error.statusCode ? error.statusCode : 500,
+      body: JSON.stringify({
+        error: error.name ? error.name : 'Exception',
+        message: error.message ? error.message : 'Generic error'
+      })
+    }
   }
 };
