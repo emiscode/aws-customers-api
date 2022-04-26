@@ -42,6 +42,12 @@ functions:
       - http:
           path: customers/{id}
           method: put
+  deleteCustomer:
+    handler: handler.deleteCustomer
+    events:
+      - http:
+          path: customers/{id}
+          method: delete
 resources:
   Resources:
     CustomersTable:

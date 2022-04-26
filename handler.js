@@ -158,6 +158,51 @@ module.exports.updateCustomer = async (event) => {
     if (errorName === 'ConditionalCheckFailedException') {
       errorName = `Customer with id ${id} not found`;
       errorMessage = `Nothing to be updated`;
+      errorStatusCode = 404;
+    }
+
+    return {
+      statusCode: errorStatusCode,
+      body: JSON.stringify({
+        error: errorName,
+        message: errorMessage
+      })
+    }
+  }
+};
+
+module.exports.deleteCustomer = async (event) => {
+  console.log(event);
+
+  const { id } = event["pathParameters"];
+
+  try {
+
+    await dynamoDB
+    .delete({
+      ...params,
+      Key: {
+        id
+      },
+      ConditionExpression: 'attribute_exists(id)',
+    })
+    .promise();
+
+    return {
+      statusCode: 204,
+    };
+
+  } catch (error) {
+    console.log('Error', error);
+
+    let errorName = error.name ? error.name : 'Exception';
+    let errorMessage = error.message ? error.message : 'Generic error';
+    let errorStatusCode = error.statusCode ? error.statusCode : 500
+
+    if (errorName === 'ConditionalCheckFailedException') {
+      errorName = `Customer with id ${id} not found`;
+      errorMessage = `Nothing to be deleted`;
+      errorStatusCode = 404;
     }
 
     return {
