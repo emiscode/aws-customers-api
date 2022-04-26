@@ -1,10 +1,14 @@
 service: aws-customers-api
 frameworkVersion: '3'
+
 provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+  environment:
+    CUSTOMERS_TABLE: 'CUSTOMERS-${opt:stage, self:provider:stage}'
+
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -14,10 +18,12 @@ provider:
         - dynamodb:DeleteItem
         - dynamodb:GetItem
         - dynamodb:UpdateItem
-      Resource: arn:aws:dynamodb:us-east-1:425187044368:table/CUSTOMERS
+      Resource: 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CUSTOMERS_TABLE}'
+
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
+
 custom:
   dynamodb:
     stages:
@@ -35,6 +41,7 @@ custom:
         sources:
           - table: CUSTOMERS
             sources: [./offline/migrations/customers-seed.json]
+
 functions:
   listCustomers:
     handler: handler.listCustomers
@@ -42,36 +49,41 @@ functions:
       - http:
           path: customers
           method: get
+
   getCustomerById:
     handler: handler.getCustomerById
     events:
       - http:
           path: customers/{id}
           method: get
+
   saveCustomer:
     handler: handler.saveCustomer
     events:
       - http:
           path: customers
           method: post
+
   updateCustomer:
     handler: handler.updateCustomer
     events:
       - http:
           path: customers/{id}
           method: put
+
   deleteCustomer:
     handler: handler.deleteCustomer
     events:
       - http:
           path: customers/{id}
           method: delete
+
 resources:
   Resources:
     CustomersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: CUSTOMERS
+        TableName: ${self:provider.environment.CUSTOMERS_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

@@ -2,7 +2,7 @@
 
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
-const params = { TableName: 'CUSTOMERS' }
+const params = { TableName: process.env.CUSTOMERS_TABLE }
 
 const dynamodbOfflineOptions = {
   region: 'localhost',

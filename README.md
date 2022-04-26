@@ -21,6 +21,7 @@ Customers REST API Project with AWS Lambda and Serverless Framework
   - sls deploy -f getCustomerById
   - sls logs -f getCustomerById --tail
   - sls invoke local -f getCustomerById
+  - sls deploy --stage qa (to separate envs)
   - sls offline start (to start with dynamodb locally)
   - aws dynamodb batch-write-item --request-items file://customers.json
 
