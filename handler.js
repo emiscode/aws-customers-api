@@ -3,17 +3,54 @@
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 const params = { TableName: 'CUSTOMERS' }
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+const dynamodbOfflineOptions = {
+  region: 'localhost',
+  endpoint: 'http://localhost:8000'
+}
+
+const isOffline = () => false; //process.env.IS_OFFLINE;
+
+const dynamoDB = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient()
 
 module.exports.listCustomers = async (event) => {
   console.log(event);
 
   try {
-    let data = await dynamoDB.scan(params).promise();
+    const queryString = {
+      limit: 2,
+      ...event.queryStringParameters
+    };
+
+    const { limit, next } = queryString;
+
+    let paginationParams = {
+      ...params,
+      Limit: limit
+    }
+
+    if (next) {
+      paginationParams.ExclusiveStartKey = {
+        id: next
+      }
+    }
+
+    let data = await dynamoDB.scan(paginationParams).promise();
+
+    let nextToken = data.LastEvaluatedKey !== undefined
+      ? data.LastEvaluatedKey.id
+      : null
+
+    const result = {
+      items: data.Items,
+      next_token: nextToken
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data.Items),
+      body: JSON.stringify(result),
     }
   } catch (error) {
     console.log('Error', error);

@@ -17,6 +17,24 @@ provider:
       Resource: arn:aws:dynamodb:us-east-1:425187044368:table/CUSTOMERS
 plugins:
   - serverless-offline
+  - serverless-dynamodb-local
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+    seed:
+      domain:
+        sources:
+          - table: CUSTOMERS
+            sources: [./offline/migrations/customers-seed.json]
 functions:
   listCustomers:
     handler: handler.listCustomers
